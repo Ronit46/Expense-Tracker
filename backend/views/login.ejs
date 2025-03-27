@@ -26,6 +26,10 @@
             color: red;
             font-size: 14px;
         }
+        .success {
+            color: green;
+            font-size: 14px;
+        }
         input {
             width: 100%;
             padding: 8px;
@@ -49,18 +53,21 @@
     <script>
         function validateForm(event) {
             event.preventDefault();
-            let username = document.getElementById("username").value.trim();
+            let email = document.getElementById("email").value.trim();
             let password = document.getElementById("password").value.trim();
             let errorMessage = "";
-            
-            if (username === "") {
-                errorMessage = "Username is required.";
+
+            // Email validation
+            if (email === "") {
+                errorMessage = "Email is required.";
+            } else if (!email.includes("@") || !email.includes(".")) {
+                errorMessage = "Enter a valid email address.";
             } else if (password === "") {
                 errorMessage = "Password is required.";
             } else if (password.length < 6) {
                 errorMessage = "Password must be at least 6 characters long.";
             }
-            
+
             if (errorMessage) {
                 document.getElementById("error-message").innerText = errorMessage;
                 return false;
@@ -73,19 +80,27 @@
 <body>
     <div class="container">
         <h2>Login</h2>
-        <% if (error) { %>
+
+        <% if (error.length > 0) { %>
             <p class="error"><%= error %></p>
         <% } %>
+
+        <% if (success.length > 0) { %>
+            <p class="success"><%= success %></p>
+        <% } %>
+
         <p id="error-message" class="error"></p>
+
         <form id="login-form" action="/login" method="POST" onsubmit="return validateForm(event)">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
             
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
             
             <button type="submit">Login</button>
         </form>
+
         <p>Don't have an account? <a href="/register">Register here</a></p>
     </div>
 </body>
