@@ -3,10 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Daily Expense Tracker</title>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style>
+        /* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.logo img {
+    width: 30px;
+    margin-right: 10px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li {
+    margin: 0 15px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+}
+
+.login-btn {
+    background: #16a085;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: white;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 80px;
+    background: #f8fafa;
+}
+
+.hero-content {
+    max-width: 50%;
+}
+
+.hero-content h1 {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.highlight {
+    color: #16a085;
+}
+
+.hero-content p {
+    color: #666;
+    margin: 15px 0;
+}
+
+.cta-btn {
+    display: inline-block;
+    background: #16a085;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+.hero-image img {
+    width: 350px;
+}
+    </style>
 </head>
 <body>
-    <h1>Welcome to the Expense Tracker</h1>
-    <p><a href="/login">Login here</a></p>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <img src="/images/logo.png" alt="Logo">
+            <span>Daily Expense Tracker</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#">Install</a></li>
+            <li><a href="#">Tools</a></li>
+            <li><a href="#">Blogs</a></li>
+            <li><a href="/login" class="login-btn">Login</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Track Your Money, <br><span class="highlight">Simplify Your Life</span></h1>
+            <p>Effortlessly track your expenses, understand your spending patterns, and make better financial decisions.</p>
+            <a href="#" class="cta-btn">Start Tracking Free</a>
+        </div>
+        <div class="hero-image">
+            <img src="/images/dailyexpensetracker-mobile.png" alt="Expense Tracker App">
+        </div>
+    </section>
+
 </body>
 </html>
