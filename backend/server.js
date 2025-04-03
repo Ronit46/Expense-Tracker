@@ -4,22 +4,12 @@ const cors = require("cors");
 const path = require("path");
 const connectDB = require("./config/db");
 const session = require("express-session");
-const flash = require("connect-flash");
-const bcrypt = require("bcrypt");
+const flash = require("express-flash");
+const bcrypt = require("bcryptjs");
+const rateLimit = require("express-rate-limit");
 const User = require("./models/User");
 
 dotenv.config();
-
-// Debugging Logs
-console.log(`MONGO_URI: ${process.env.MONGO_URI || 'not set'}`);
-console.log(`JWT_SECRET: ${process.env.JWT_SECRET || 'not set'}`);
-
-if (!process.env.MONGO_URI || !process.env.JWT_SECRET) {
-    console.error("❌ Environment variables are not set correctly.");
-    process.exit(1);
-}
-
-// Connect to MongoDB
 connectDB();
 
 const app = express();
@@ -27,15 +17,17 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 
 // Session and Flash Messages
-app.use(session({
-    secret: process.env.SESSION_SECRET || "mysecret",
-    resave: false,
-    saveUninitialized: true,  // 🔹 Fix: Ensures session is always created
-    cookie: { secure: false }
-}));
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || "mysecret",
+        resave: false,
+        saveUninitialized: false,
+        cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
+    })
+);
 app.use(flash());
 
 // Set EJS as the view engine
@@ -45,8 +37,8 @@ app.set("views", path.join(__dirname, "views"));
 // Serve static files
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.static(path.join(__dirname, "images")));
-app.use(express.static(path.join(__dirname, "frontend")));  // 🔹 Fix: Serves frontend files
-app.use(express.static(path.join(__dirname, "frontend/images"))); 
+app.use(express.static(path.join(__dirname, "frontend")));
+app.use(express.static(path.join(__dirname, "frontend/images")));
 
 // Middleware to pass flash messages and user session to views
 app.use((req, res, next) => {
@@ -56,28 +48,25 @@ app.use((req, res, next) => {
     next();
 });
 
-// Debugging Middleware
-app.use((req, res, next) => {
-    console.log(`🔍 Request: ${req.method} ${req.url}`);
-    next();
-});
-
-// Home Route
+// Routes
 app.get("/", (req, res) => {
-    res.render("index", { user: req.session.user });
+    res.render("index");
 });
 
-// Login Routes
 app.get("/login", (req, res) => {
-    console.log("✅ GET /login called");
     res.render("login");
 });
 
-app.post("/login", async (req, res, next) => {
-    console.log("🔹 Login Request Body:", req.body);
+app.get("/home", (req, res) => {
+    if (!req.session.user) {
+        return res.redirect("/login");
+    }
+    res.render("home");
+});
 
+// Login Route
+app.post("/login", async (req, res) => {
     const { email, password } = req.body;
-
     if (!email || !password) {
         req.flash("error", "All fields are required.");
         return res.redirect("/login");
@@ -85,80 +74,40 @@ app.post("/login", async (req, res, next) => {
 
     try {
         const user = await User.findOne({ email });
-
         if (!user) {
             req.flash("error", "Invalid credentials.");
             return res.redirect("/login");
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password.trim(), user.password);
         if (!isMatch) {
-            req.flash("error", "Invalid credentials.");
+            req.flash("error", "Incorrect password. Please try again.");
             return res.redirect("/login");
         }
 
         req.session.user = { id: user._id, name: user.name, email: user.email };
-        req.session.save(err => {
+        console.log("✅ Session Set:", req.session.user);
+
+        req.session.save((err) => {
             if (err) {
+                console.log("❌ Session Save Error:", err);
                 req.flash("error", "Something went wrong. Try again.");
                 return res.redirect("/login");
             }
-            req.flash("success", "Login successful!");
-            return res.redirect("/");
+            console.log("✅ Redirecting to Home");
+            return res.redirect("/home");
         });
     } catch (error) {
         console.error("⚠️ Login Error:", error);
-        next(error);  // 🔹 Fix: Proper error handling
-    }
-});
-
-// Register Routes
-app.get("/register", (req, res) => {
-    console.log("✅ GET /register called");
-    res.render("register");
-});
-
-app.post("/register", async (req, res, next) => {
-    console.log("🔹 Register Request Body:", req.body);
-
-    const { name, email, password, confirmPassword } = req.body;
-
-    if (!name || !email || !password || !confirmPassword) {
-        req.flash("error", "All fields are required.");
-        return res.redirect("/register");
-    }
-
-    if (password !== confirmPassword) {
-        req.flash("error", "Passwords do not match.");
-        return res.redirect("/register");
-    }
-
-    try {
-        let user = await User.findOne({ email });
-        if (user) {
-            req.flash("error", "Email already exists.");
-            return res.redirect("/register");
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        user = new User({ name, email, password: hashedPassword });
-        await user.save();
-
-        req.flash("success", "Registration successful! You can now log in.");
-        return res.redirect("/login");
-    } catch (error) {
-        console.error("⚠️ Register Error:", error);
-        next(error);  // 🔹 Fix: Proper error handling
+        req.flash("error", "An unexpected error occurred.");
+        res.redirect("/login");
     }
 });
 
 // Logout Route
 app.get("/logout", (req, res) => {
-    console.log("✅ GET /logout called");
     req.session.destroy(() => {
-        res.redirect("/login");
+        res.redirect("/");
     });
 });
 
@@ -171,4 +120,4 @@ app.use((err, req, res, next) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

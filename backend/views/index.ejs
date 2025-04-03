@@ -98,6 +98,101 @@
 .hero-image img {
     width: 350px;
 }
+
+.features {
+    text-align: center;
+    padding: 50px 80px;
+}
+
+.features h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.features-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    justify-content: center;
+}
+
+.feature-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.feature-box img {
+    width: 30px;
+    margin-bottom: 10px;
+}
+
+.feature-box h3 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.feature-box p {
+    color: #666;
+    margin-top: 5px;
+}
+
+.coming-soon {
+    display: inline-block;
+    background: #d1fae5;
+    color: #16a085;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.footer {
+    text-align: center;
+    padding: 40px;
+    background: #f8fafa;
+    margin-top: 50px;
+}
+
+.footer-content {
+    max-width: 600px;
+    margin: auto;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #666;
+    font-size: 14px;
+}
+
+.social-links {
+    margin: 15px 0;
+}
+
+.social-icon img {
+    width: 24px;
+    margin: 0 10px;
+}
+
+.copyright {
+    font-size: 12px;
+    color: #999;
+    margin-top: 15px;
+}
     </style>
 </head>
 <body>
@@ -120,12 +215,79 @@
         <div class="hero-content">
             <h1>Track Your Money, <br><span class="highlight">Simplify Your Life</span></h1>
             <p>Effortlessly track your expenses, understand your spending patterns, and make better financial decisions.</p>
-            <a href="#" class="cta-btn">Start Tracking Free</a>
+            <a href="/login" class="cta-btn">Start Tracking Free</a>
         </div>
         <div class="hero-image">
             <img src="/images/dailyexpensetracker-mobile.png" alt="Expense Tracker App">
         </div>
     </section>
+
+    <!-- Features Section -->
+<section class="features">
+    <h2>Features</h2>
+    <div class="features-container">
+        <div class="feature-box">
+            <img src="/images/f1.png" alt="Expense Tracking">
+            <h3>Expense Tracking</h3>
+            <p>Keep track of your daily expenses with an easy-to-use interface.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f2.png" alt="Real-time Overview">
+            <h3>Real-time Overview</h3>
+            <p>Get instant insights into your spending patterns and financial health.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f3.png" alt="Category Management">
+            <h3>Category Management</h3>
+            <p>Organize expenses into categories for better tracking and analysis.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f4.webp" alt="AI Smart Insights">
+            <h3>AI Smart Insights</h3>
+            <span class="coming-soon">coming soon</span>
+            <p>Get personalized spending insights and recommendations to improve your financial habits.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f5.png" alt="Cloud Backup">
+            <h3>Cloud Backup</h3>
+            <span class="coming-soon">coming soon</span>
+            <p>Secure cloud backup to never lose your financial data. Access your data across all devices.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f6.jpg" alt="Money Challenges">
+            <h3>Money Challenges</h3>
+            <span class="coming-soon">coming soon</span>
+            <p>Join community savings challenges and compete with friends to achieve financial goals.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f7.png" alt="Budget Planner">
+            <h3>Budget Planner</h3>
+            <p>Set budgets and track your expenses to stay within your financial goals.</p>
+        </div>
+        <div class="feature-box">
+            <img src="/images/f8.png" alt="Enhanced Security">
+            <h3>Enhanced Security</h3>
+            <p>Secure your financial data with encryption and two-factor authentication.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Section -->
+<footer class="footer">
+    <div class="footer-content">
+        <img src="/images/profile.jpg" alt="Gurpreet" class="profile-pic">
+        <h3>👋 Hey, I'm Ronit Raj</h3>
+        <p>
+            I built Daily Expense Tracker as a side project to solve my own expense tracking problems.
+            No groups, No team - just me coding away on weekends 🖥️
+        </p>
+        <div class="social-links">
+            <a href="#" class="social-icon"><img src="/images/youtube.webp" alt="YouTube"></a>
+            <a href="#" class="social-icon"><img src="/images/github.png" alt="GitHub"></a>
+        </div>
+        <p class="copyright">© 2025 Daily Expense Tracker. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

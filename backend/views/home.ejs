@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expense Tracker</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <h1><img src="/images/logo.png" alt="Logo"> Daily Expense Tracker</h1>
+    </header>
+    <main>
+        <div class="summary">
+            <div class="summary-card">
+                <p>Today Earnings</p>
+                <span class="income">$0.00</span>
+            </div>
+            <div class="summary-card">
+                <p>Today Expenses</p>
+                <span class="expense">$0.00</span>
+            </div>
+            <div class="summary-card">
+                <p>Balance</p>
+                <span class="balance">$0.00</span>
+            </div>
+        </div>
+        <div class="toggle-section">
+            <button class="active">Daily</button>
+            <button>Recurring</button>
+        </div>
+        <div class="transaction-list">
+            <p><i class="fas fa-arrow-down text-danger"></i> Expenses</p>
+            <p><i class="fas fa-arrow-up text-success"></i> Income</p>
+        </div>
+    </main>
+    <button class="add-btn">+</button>
+    <nav class="bottom-nav">
+        <a href="/home" class="active"><i class="fas fa-home"></i> Home</a>
+        <a href="/stats"><i class="fas fa-chart-bar"></i> Stats</a>
+        <a href="/profile"><i class="fas fa-user"></i> Profile</a>
+        <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
+    </nav>
+</body>
+</html>
