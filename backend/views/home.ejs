@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border: none;
+        }
+        .summary-card {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+        .menu-card {
+            background-color: white;
+        }
+        .menu-item {
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .menu-item:hover {
+            background-color: #f1f1f1;
+            border-radius: 10px;
+        }
+        .menu-item i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #2575fc;
+        }
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-item {
+            padding: 10px;
+            text-align: center;
+        }
+        .nav-item.active {
+            color: #2575fc;
+        }
+        .amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container py-4">
+        <h2 class="mb-4">Daily Expense Tracker</h2>
+        
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card summary-card p-3">
+                    <h5>Today Earnings</h5>
+                    <div class="amount">$0.00</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card summary-card p-3">
+                    <h5>Today Expenses</h5>
+                    <div class="amount">$0.00</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card summary-card p-3">
+                    <h5>Balance</h5>
+                    <div class="amount">$0.00</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Menu -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card menu-card p-3">
+                    <div class="row">
+                        <div class="col-6 menu-item">
+                            <i class="fas fa-calendar-day"></i>
+                            <div>Daily Expenses</div>
+                        </div>
+                        <div class="col-6 menu-item">
+                            <i class="fas fa-sync-alt"></i>
+                            <div>Recurring Income</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card menu-card p-3 text-center">
+                    <div class="amount mb-2">$0.00</div>
+                    <div>Today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="nav-bar">
+        <div class="row">
+            <div class="col-3 nav-item active">
+                <i class="fas fa-home"></i>
+                <div>Home</div>
+            </div>
+            <div class="col-3 nav-item">
+                <i class="fas fa-chart-pie"></i>
+                <div>Stats</div>
+            </div>
+            <div class="col-3 nav-item">
+                <i class="fas fa-user"></i>
+                <div>Profile</div>
+            </div>
+            <div class="col-3 nav-item">
+                <i class="fas fa-cog"></i>
+                <div>Settings</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add active class to clicked nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Expense Tracker Functionality
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = '<%= user.token %>';
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+
+            // DOM Elements
+            const expenseForm = document.createElement('form');
+            const expenseList = document.createElement('div');
+            const summaryCards = document.querySelectorAll('.summary-card .amount');
+            
+            // Add form to first menu card
+            const menuCard = document.querySelector('.menu-card');
+            menuCard.innerHTML = `
+                <form id="expenseForm" class="mb-3">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="expenseTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="expenseAmount" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="expenseCategory" required>
+                            <option value="food">Food</option>
+                            <option value="transport">Transport</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="bills">Bills</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" id="expenseType" required>
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            `;
+
+            // Add list container to second menu card
+            const secondMenuCard = document.querySelectorAll('.menu-card')[1];
+            secondMenuCard.innerHTML = `
+                <div id="expenseList" class="list-group"></div>
+            `;
+
+            // Fetch and display expenses
+            async function loadExpenses() {
+                try {
+                    const response = await fetch('/api/expenses', { headers });
+                    const expenses = await response.json();
+                    
+                    const expenseList = document.getElementById('expenseList');
+                    expenseList.innerHTML = '';
+                    
+                    let totalIncome = 0;
+                    let totalExpense = 0;
+                    
+                    expenses.forEach(expense => {
+                        const isIncome = expense.amount > 0;
+                        const listItem = document.createElement('div');
+                        listItem.className = `list-group-item d-flex justify-content-between align-items-center ${isIncome ? 'list-group-item-success' : 'list-group-item-danger'}`;
+                        listItem.innerHTML = `
+                            <div>
+                                <strong>${expense.title}</strong>
+                                <small class="text-muted">${expense.category}</small>
+                            </div>
+                            <div>
+                                <span>${isIncome ? '+' : '-'}$${Math.abs(expense.amount)}</span>
+                                <button class="btn btn-sm btn-outline-danger ms-2" data-id="${expense._id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        expenseList.appendChild(listItem);
+                        
+                        if (isIncome) {
+                            totalIncome += expense.amount;
+                        } else {
+                            totalExpense += Math.abs(expense.amount);
+                        }
+                    });
+                    
+                    // Update summary cards
+                    summaryCards[0].textContent = `$${totalIncome.toFixed(2)}`;
+                    summaryCards[1].textContent = `$${totalExpense.toFixed(2)}`;
+                    summaryCards[2].textContent = `$${(totalIncome - totalExpense).toFixed(2)}`;
+                    
+                } catch (error) {
+                    console.error('Error loading expenses:', error);
+                }
+            }
+
+            // Handle form submission
+            document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('expenseTitle').value;
+                const amount = parseFloat(document.getElementById('expenseAmount').value);
+                const category = document.getElementById('expenseCategory').value;
+                const type = document.getElementById('expenseType').value;
+                
+                const expenseData = {
+                    title,
+                    amount: type === 'income' ? amount : -amount,
+                    category
+                };
+                
+                try {
+                    const response = await fetch('/api/expenses', {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify(expenseData)
+                    });
+                    
+                    if (response.ok) {
+                        document.getElementById('expenseForm').reset();
+                        await loadExpenses();
+                    }
+                } catch (error) {
+                    console.error('Error adding expense:', error);
+                }
+            });
+
+            // Handle expense deletion
+            document.getElementById('expenseList').addEventListener('click', async (e) => {
+                if (e.target.closest('button')) {
+                    const id = e.target.closest('button').dataset.id;
+                    try {
+                        const response = await fetch(`/api/expenses/${id}`, {
+                            method: 'DELETE',
+                            headers
+                        });
+                        
+                        if (response.ok) {
+                            await loadExpenses();
+                        }
+                    } catch (error) {
+                        console.error('Error deleting expense:', error);
+                    }
+                }
+            });
+
+            // Initial load
+            await loadExpenses();
+        });
+    </script>
+</body>
+</html>
