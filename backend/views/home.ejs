@@ -144,10 +144,9 @@
 
         // Expense Tracker Functionality
         document.addEventListener('DOMContentLoaded', async () => {
-            const token = '<%= user.token %>';
             const headers = {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'credentials': 'include'
             };
 
             // DOM Elements
@@ -197,7 +196,10 @@
             // Fetch and display expenses
             async function loadExpenses() {
                 try {
-                    const response = await fetch('/api/expenses', { headers });
+                    const response = await fetch('/api/expenses', { 
+                        headers,
+                        credentials: 'include'
+                    });
                     const expenses = await response.json();
                     
                     const expenseList = document.getElementById('expenseList');
@@ -260,6 +262,7 @@
                     const response = await fetch('/api/expenses', {
                         method: 'POST',
                         headers,
+                        credentials: 'include',
                         body: JSON.stringify(expenseData)
                     });
                     
@@ -279,7 +282,8 @@
                     try {
                         const response = await fetch(`/api/expenses/${id}`, {
                             method: 'DELETE',
-                            headers
+                            headers,
+                            credentials: 'include'
                         });
                         
                         if (response.ok) {

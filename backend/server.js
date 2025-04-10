@@ -1,15 +1,24 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const cors = require("cors");
 const path = require("path");
+// Load environment variables with absolute path
+require('dotenv').config({ 
+  path: 'C:\\Users\\Mr Ronit\\OneDrive\\Desktop\\Expense-Tracker-main\\backend\\.env' 
+});
+const cors = require("cors");
 const connectDB = require("./config/db");
 const session = require("express-session");
 const flash = require("express-flash");
 const rateLimit = require("express-rate-limit");
 const userRoutes = require("./routes/userRoutes");
 
-dotenv.config();
-connectDB();
+// Already configured above
+console.log('Connecting to MongoDB...');
+connectDB().then(() => {
+    console.log('MongoDB connection established');
+}).catch(err => {
+    console.error('MongoDB connection error:', err);
+});
 
 const app = express();
 
@@ -22,9 +31,14 @@ app.use(cors({ credentials: true, origin: true }));
 app.use(
     session({
         secret: process.env.SESSION_SECRET || "mysecret",
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 },
+        resave: true,
+        saveUninitialized: true,
+        cookie: { 
+            secure: false, 
+            httpOnly: true, 
+            maxAge: 24 * 60 * 60 * 1000,
+            sameSite: 'lax'
+        },
     })
 );
 app.use(flash());
@@ -56,15 +70,23 @@ app.get("/login", (req, res) => {
     res.render("login");
 });
 
+app.post("/login", (req, res) => {
+    const { loginUser } = require("./controllers/userController");
+    loginUser(req, res);
+});
+
 app.get("/register", (req, res) => {
     res.render("register");
 });
 
 app.get("/home", (req, res) => {
+    console.log('Home route session:', req.session);
     if (!req.session.user) {
+        console.log('No user session, redirecting to login');
         return res.redirect("/login");
     }
-    res.render("home");
+    console.log('Rendering home for user:', req.session.user);
+    res.render("home", { user: req.session.user });
 });
 
 // API Routes
