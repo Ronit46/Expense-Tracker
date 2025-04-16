@@ -43,6 +43,33 @@ const registerUser = async (req, res) => {
     }
 };
 
+const getProfile = async (req, res) => {
+    if (!req.session.user) {
+        req.flash('error', 'Please login to view profile');
+        return res.redirect('/login');
+    }
+
+    try {
+        const user = await User.findById(req.session.user.id);
+        if (!user) {
+            req.flash('error', 'User not found');
+            return res.redirect('/login');
+        }
+
+        res.render('profile', { 
+            user: {
+                name: user.name,
+                email: user.email,
+                memberSince: user.createdAt
+            }
+        });
+    } catch (error) {
+        console.error("Profile Error:", error);
+        req.flash('error', 'Server error');
+        res.redirect('/home');
+    }
+};
+
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -80,7 +107,14 @@ const loginUser = async (req, res) => {
             email: user.email
         };
 
-        res.redirect('/home');
+        req.session.save(err => {
+            if (err) {
+                console.error("Session save error:", err);
+                req.flash('error', 'Login failed');
+                return res.redirect('/login');
+            }
+            res.redirect('/home');
+        });
 
     } catch (error) {
         console.error("Login Error:", error);
@@ -89,4 +123,4 @@ const loginUser = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser, getProfile };

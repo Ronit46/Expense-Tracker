@@ -1,20 +1,11 @@
-const jwt = require("jsonwebtoken");
-
 const protect = (req, res, next) => {
-    let token = req.header("Authorization");
-
-    if (!token) {
-        return res.status(401).json({ message: "Not authorized, no token" });
+    if (!req.session.user) {
+        return res.status(401).json({ message: "Not authorized, please login" });
     }
-
-    try {
-        token = token.replace("Bearer ", "");
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(401).json({ message: "Invalid token" });
-    }
+    
+    // Attach user to request object
+    req.user = req.session.user;
+    next();
 };
 
 module.exports = protect;

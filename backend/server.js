@@ -1,6 +1,8 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
+const protect = require("./config/authMiddleware");
+const { getProfile } = require("./controllers/userController");
 // Load environment variables with absolute path
 require('dotenv').config({ 
   path: 'C:\\Users\\Mr Ronit\\OneDrive\\Desktop\\Expense-Tracker-main\\backend\\.env' 
@@ -89,9 +91,20 @@ app.get("/home", (req, res) => {
     res.render("home", { user: req.session.user });
 });
 
+// Profile Route
+app.get("/profile", protect, getProfile);
+
+app.get("/settings", protect, (req, res) => {
+    res.render("settings", { user: req.session.user });
+});
+
 // API Routes
 app.use("/api/users", userRoutes);
-app.use("/api/expenses", require("./routes/expenseRoutes"));
+const { getStats } = require("./controllers/expenseController");
+const expenseRoutes = require("./routes/expenseRoutes");
+
+app.use("/api/expenses", expenseRoutes);
+app.get("/stats", protect, getStats);
 
 // Logout Route
 app.get("/logout", (req, res) => {
